@@ -1,63 +1,64 @@
 "use strict";
 
-// because I hate IE so much
-/* eslint-disable max-statements-per-line */
-Math.log2 = Math.log2 || function(x) { return Math.log(x) * Math.LOG2E; };
-Math.log10 = Math.log10 || function(x) { return Math.log(x) * Math.LOG10E; };
+const log10 = Math.log10 || function (x) { return Math.log(x) * Math.LOG10E; };
 
-function round1(num) {
+export {
+    log10
+}
+
+export function round1(num) {
     return Math.floor(num * 10 + .000000001) / 10;
 }
-function round2(num) {
+export function round2(num) {
     return Math.floor(num * 100 + .000000001) / 100;
 }
-function round5(num) {
+export function round5(num) {
     return Math.floor(num * 100000 + .000000001) / 100000;
 }
 
-function precision2(num) {
+export function precision2(num) {
     return Number(num.toPrecision(2));
 }
-function precision3(num) {
+export function precision3(num) {
     return Number(num.toPrecision(3));
 }
-function precision4(num) {
+export function precision4(num) {
     return Number(num.toPrecision(4));
 }
 
-function pxToInt(num) {
+export function pxToInt(num) {
     return parseFloat(num.substring(0, num.indexOf("px")));
 }
 
-function round(num) {
+export function round(num) {
     return formatNumber(num);
 }
 
-function formatNumber(num) {
+export function formatNumber(num) {
     return Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/gu, ",");
 }
 
-function formatTime(seconds) {
+export function formatTime(seconds) {
     secondsToTime(seconds);
 }
 
-function copyArray(arr) {
+export function copyArray(arr) {
     return JSON.parse(JSON.stringify(arr));
 }
 
-function copyObject(obj) {
+export function copyObject(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
 
-function withinDistance(x1, y1, x2, y2, radius) {
+export function withinDistance(x1, y1, x2, y2, radius) {
     return getDistance(x1, y1, x2, y2) < radius;
 }
 
-function getDistance(x1, y1, x2, y2) {
+export function getDistance(x1, y1, x2, y2) {
     return Math.sqrt(Math.pow(Math.abs(x1 - x2), 2) + Math.pow(Math.abs(y1 - y2), 2));
 }
 
-function intToStringNegative(value, amount) {
+export function intToStringNegative(value, amount) {
     let isPositive = 1;
     if (value < 0) {
         isPositive = -1;
@@ -74,7 +75,7 @@ function intToStringNegative(value, amount) {
 }
 
 
-function intToString2(value, sigFigs) {
+export function intToString2(value, sigFigs) {
     value += 0.0000001; // Anti floating point rounding issues
 
     let fixedDigits; // Number of digits after the decimal point
@@ -103,14 +104,14 @@ function intToString2(value, sigFigs) {
     }
 }
 
-function formatEngineering(value) {
+export function formatEngineering(value) {
     const absVal = Math.abs(value);
-    const sign   = value < 0 ? "-" : "";
+    const sign = value < 0 ? "-" : "";
 
     if (absVal >= 1e5) {
-        const exp      = Math.floor(Math.log10(absVal) / 3) * 3;
+        const exp = Math.floor(Math.log10(absVal) / 3) * 3;
         const mantissa = absVal / Math.pow(10, exp);
-        const mantStr  = Number(mantissa.toFixed(2)).toString();
+        const mantStr = Number(mantissa.toFixed(2)).toString();
         return sign + mantStr + "e" + exp;
     }
 
@@ -118,13 +119,13 @@ function formatEngineering(value) {
 }
 
 
-function intToString(value, amount, hideSmall) {
+export function intToString(value, amount, hideSmall) {
     let baseValue = amount ? amount : 3;
-    if(value === 0) {
-        if(baseValue > 1) {
+    if (value === 0) {
+        if (baseValue > 1) {
             return "0.0"
         }
-        if(baseValue > 0) {
+        if (baseValue > 0) {
             return "0"
         }
     }
@@ -132,47 +133,47 @@ function intToString(value, amount, hideSmall) {
     value *= isNeg ? -1 : 1;
     if (value >= 10000) {
         value += .0000001; //anti floating point rounding issues
-        if(data.gameSettings.numberType === "numberSuffix") {
+        if (data.gameSettings.numberType === "numberSuffix") {
             return (isNeg ? "-" : "") + nFormatter(value, 3);
-        } else if(data.gameSettings.numberType === "scientific") {
+        } else if (data.gameSettings.numberType === "scientific") {
             return (isNeg ? "-" : "") + Math.abs(value).toExponential(2).replace("+", "");
-        } else if(data.gameSettings.numberType === "engineering") {
+        } else if (data.gameSettings.numberType === "engineering") {
             return formatEngineering(value * (isNeg ? -1 : 1));
         }
     }
     if (value >= 1000) { //1000 - 10000, should be 6,512 (.1) - 1 if base is > 2
         value += .0000001; //anti floating point rounding issues
-        if(amount >= 2) {
+        if (amount >= 2) {
             baseValue = 1;
         } else {
             baseValue = 0;
         }
         const returnVal = parseFloat(value).toFixed(baseValue);
-        return (isNeg?"-":"") + `${returnVal[0]},${returnVal.substring(1)}`;
+        return (isNeg ? "-" : "") + `${returnVal[0]},${returnVal.substring(1)}`;
     }
-    if(value < 1) {
-        if(value < .0001) {
-            if(hideSmall) {
+    if (value < 1) {
+        if (value < .0001) {
+            if (hideSmall) {
                 return parseFloat("0").toFixed(baseValue);
             }
             return (isNeg ? "-" : "") + Math.abs(value).toExponential(2).replace("+", "");
         }
-        return (isNeg?"-":"") + parseFloat(value).toPrecision(baseValue);
+        return (isNeg ? "-" : "") + parseFloat(value).toPrecision(baseValue);
     }
 
-    return (isNeg?"-":"") + parseFloat(value).toFixed(baseValue - 1);
+    return (isNeg ? "-" : "") + parseFloat(value).toFixed(baseValue - 1);
 }
 
 
-function intToStringRound(value) {
+export function intToStringRound(value) {
     if (value >= 10000) {
         return nFormatter(value, 3);
     }
     return Math.floor(value);
 }
 
-function secondsToTime(seconds) {
-    if(!seconds || seconds < 0) {
+export function secondsToTime(seconds) {
+    if (!seconds || seconds < 0) {
         seconds = "0";
     }
     seconds = Math.floor(seconds);
@@ -190,7 +191,7 @@ function secondsToTime(seconds) {
     }
 }
 
-function toSuffix(value) {
+export function toSuffix(value) {
     value = Math.round(value);
     const suffixes = ["", "k", "m", "b", "t", "Qa", "Qi", "Sx", "Sp", "o", "n", "Dc", "Ud", "Dd", "Td", "Qid", "Qad", "sd", "Sd", "Od", "Nd", "V"];
     const suffixNum = Math.floor(((String(value)).length - 1) / 3);
@@ -224,7 +225,7 @@ const si = [
 ];
 const rx = /\.0+$|(\.[0-9]*[1-9])0+$/u;
 
-function nFormatter(num, digits) {
+export function nFormatter(num, digits) {
     for (let i = 0; i < si.length; i++) {
         // /1.000501 to handle rounding
         if ((num) >= si[i].value / 1.000501) {
@@ -234,14 +235,14 @@ function nFormatter(num, digits) {
     return num.toPrecision(digits).replace(rx, "$1");
 }
 
-function decamelize(str) {
+export function decamelize(str) {
     return str
         .replace(/([A-Z])/g, ' $1')
         .trim()
         .replace(/^./, first => first.toUpperCase());
 }
 
-function decamelizeWithSpace(str) {
+export function decamelizeWithSpace(str) {
     return str
         .replace(/([a-z])([A-Z])/g, '$1 $2')
         .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2')
@@ -249,19 +250,19 @@ function decamelizeWithSpace(str) {
 }
 
 
-function camelize(str) {
+export function camelize(str) {
     return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/gu, (match, index) => {
         if (Number(match) === 0) return "";
         return index === 0 ? match.toLowerCase() : match.toUpperCase();
     });
 }
 
-function isVisible(obj) {
+export function isVisible(obj) {
     return obj.offsetWidth > 0 && obj.offsetHeight > 0;
 }
 
 //#ffdd00 -> [r, g, b]
-function hexToRgb(hex) {
+export function hexToRgb(hex) {
     hex = hex.replace("#", "");
     if (hex.length === 3) {
         hex = hex.split("").map(c => c + c).join("");
@@ -274,7 +275,7 @@ function hexToRgb(hex) {
 }
 
 const factorials = [];
-function factorial(n) {
+export function factorial(n) {
     if (n === 0 || n === 1)
         return 1;
     if (factorials[n] > 0)
@@ -284,7 +285,7 @@ function factorial(n) {
 
 
 const fibonaccis = [];
-function fibonacci(n) {
+export function fibonacci(n) {
     if (n === 0 || n === 1 || n === undefined)
         return 1;
     if (fibonaccis[n] > 0)
@@ -292,7 +293,7 @@ function fibonacci(n) {
     return fibonaccis[n] = fibonacci(n - 1) + fibonacci(n - 2);
 }
 
-function sortArrayObjectsByValue(arr, valueName) {
+export function sortArrayObjectsByValue(arr, valueName) {
     const n = arr.length;
 
     // one by one move boundary of unsorted subarray
@@ -311,21 +312,21 @@ function sortArrayObjectsByValue(arr, valueName) {
     }
 }
 
-function addClassToDiv(div, className) {
+export function addClassToDiv(div, className) {
     const arr = div.className.split(" ");
     if (arr.indexOf(className) === -1) {
         div.className += ` ${className}`;
     }
 }
 
-function removeClassFromDiv(div, className) {
+export function removeClassFromDiv(div, className) {
     div.classList.remove(className);
 }
 
 const numbers = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split(" ");
 const tens = "twenty thirty forty fifty sixty seventy eighty ninety".split(" ");
 
-function number2Words(n) {
+export function number2Words(n) {
     if (n < 20) return numbers[n];
     const digit = n % 10;
     if (n < 100) return tens[~~(n / 10) - 2] + (digit ? `-${numbers[digit]}` : "");
@@ -333,28 +334,28 @@ function number2Words(n) {
     return `${number2Words(~~(n / 1000))} thousand${n % 1000 === 0 ? "" : ` ${number2Words(n % 1000)}`}`;
 }
 
-function capitalizeFirst(s) {
+export function capitalizeFirst(s) {
     return s.charAt(0).toUpperCase() + s.substr(1);
 }
 
-function numberToWords(n) {
+export function numberToWords(n) {
     return capitalizeFirst(number2Words(n));
 }
 
-function encode(theSave) {
+export function encode(theSave) {
     return Base64.encode(LZWEncode(theSave));
 }
 
-function decode(encodedSave) {
+export function decode(encodedSave) {
     try {
         return LZWDecode(Base64.decode(encodedSave))
-    } catch(e) {
+    } catch (e) {
         return {};
     }
 }
 
 // lzw-compress a string
-function LZWEncode(s) {
+export function LZWEncode(s) {
     const dict = {};
     const data = String(s).split("");
     const out = [];
@@ -379,7 +380,7 @@ function LZWEncode(s) {
 }
 
 // decompress an LZW-encoded string
-function LZWDecode(s) {
+export function LZWDecode(s) {
     const dict = {};
     const data = (String(s)).split("");
     let currChar = data[0];
@@ -516,7 +517,7 @@ const Base64 = {
 };
 
 
-function roughSizeOfObject(object) {
+export function roughSizeOfObject(object) {
 
     const objectList = [];
     const stack = [object];
@@ -541,7 +542,7 @@ function roughSizeOfObject(object) {
 }
 
 // modified from: https://stackoverflow.com/questions/879152/how-do-i-make-javascript-beep/13194087#13194087
-function beep(duration) {
+export function beep(duration) {
     const ctxClass = window.audioContext || window.AudioContext || window.AudioContext || window.webkitAudioContext;
     const ctx = new ctxClass();
     const osc = ctx.createOscillator();
@@ -557,7 +558,7 @@ function beep(duration) {
     }, duration);
 }
 
-function statistics() {
+export function statistics() {
     let actionCount = 0;
     let actionWithStoryCount = 0;
     let multiPartActionCount = 0;
@@ -578,8 +579,8 @@ function statistics() {
         actionCount++;
     }
 
-    const list = 
-`Actions: ${actionCount} (${actionWithStoryCount} with story)
+    const list =
+        `Actions: ${actionCount} (${actionWithStoryCount} with story)
  Multi part actions: ${multiPartActionCount}
  Progress based actions: ${PBAActionCount}
  Limited actions: ${limitedActionCount}
@@ -590,7 +591,7 @@ function statistics() {
     return list;
 }
 
-function benchmark(code, iterations) {
+export function benchmark(code, iterations) {
     // supposed to kinda account for the cost of just running the eval
     const baseCost = iterations / 20;
     const before = Date.now();
@@ -606,7 +607,7 @@ function benchmark(code, iterations) {
 // provided function once upon first attempting to get the property, and in the future has
 // the computed result as an own property of the instance
 // usage: defineLazyGetter(A.prototype, 'prop', function() { return ...; })
-function defineLazyGetter(object, name, getter) {
+export function defineLazyGetter(object, name, getter) {
     Object.defineProperty(object, name, {
         get() {
             if (Object.prototype.hasOwnProperty.call(this, name)) {
